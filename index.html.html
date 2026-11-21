@@ -1187,7 +1187,7 @@ function sendRealEmail(n, c, par) {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ service_id: EMAIL_CONFIG.serviceId, template_id: EMAIL_CONFIG.templateId, user_id: EMAIL_CONFIG.publicKey,
       template_params: { to_email: par.email, to_name: firstName(par.fullName), subject: n.title, message: n.message, reference: a ? a.reference : '' } }),
-  }).then((r) => done(r.ok, r.ok ? '' : `Email service replied ${r.status}`)).catch(() => done(false, 'Could not reach the email service'));
+  }).then((r) => (r.ok ? done(true) : r.text().then((t) => done(false, `Email service replied ${r.status}: ${String(t).slice(0, 140)}`)))).catch(() => done(false, 'Could not reach the email service'));
 }
 function deliverNotification(n, live = false) {
   const par = getParent(n.parentId);
